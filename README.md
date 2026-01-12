@@ -183,7 +183,6 @@ Due to time constraints in the hackathon, the following limitations exist:
 
 - **Automated Workflows**:
   - Trigger campaigns automatically when risk thresholds are crossed
-  - Multi-touch nurture sequences
   - Post-win-back engagement monitoring
 
 ## Key Components
