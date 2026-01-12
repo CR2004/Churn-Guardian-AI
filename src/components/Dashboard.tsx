@@ -1,26 +1,23 @@
 import { useMemo } from 'react';
-import { AlertTriangle, DollarSign, TrendingUp, Mail, Lightbulb } from 'lucide-react';
+import { AlertTriangle, Mail, Lightbulb } from 'lucide-react';
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { MetricCard } from './MetricCard';
 import { Card } from './Card';
 import type { Customer, DashboardMetrics, ChurnData, RiskDistribution } from '../types';
+import { KlaviyoService } from '../services/klaviyo';
 
 interface DashboardProps {
   customers: Customer[];
+  activeCampaigns: number;
 }
 
-export function Dashboard({ customers }: DashboardProps) {
+export function Dashboard({ customers, activeCampaigns }: DashboardProps) {
   const metrics = useMemo<DashboardMetrics>(() => {
     const highRiskCustomers = customers.filter(c => c.riskScore >= 60).length;
-    const revenueAtRisk = customers
-      .filter(c => c.riskScore >= 60)
-      .reduce((sum, c) => sum + c.totalSpent, 0);
 
     return {
       highRiskCustomers,
-      revenueAtRisk,
-      revenueRecovered: 12450,
-      activeCampaigns: 3,
+      activeCampaigns,
     };
   }, [customers]);
 
@@ -52,14 +49,12 @@ export function Dashboard({ customers }: DashboardProps) {
       ? customers.reduce((sum, c) => sum + c.riskScore, 0) / customers.length
       : 0;
 
-    const highValueAtRisk = customers.filter(c => c.riskScore >= 60 && c.totalSpent > 1000).length;
+    const highValueAtRisk = customers.filter(c => c.riskScore >= 60).length;
 
     return [
       `${metrics.highRiskCustomers} customers are at high risk of churning this month`,
-      `$${metrics.revenueAtRisk.toFixed(0)} in potential revenue loss if no action taken`,
       `Average churn risk score: ${avgRiskScore.toFixed(0)}/100`,
-      `${highValueAtRisk} high-value customers need immediate attention`,
-      `Win-back campaigns have recovered $${metrics.revenueRecovered} in the last 30 days`,
+      `${highValueAtRisk} high-risk customers need immediate attention`,
     ];
   }, [customers, metrics]);
 
@@ -70,17 +65,6 @@ export function Dashboard({ customers }: DashboardProps) {
           title="High Risk Customers"
           value={metrics.highRiskCustomers}
           icon={<AlertTriangle className="w-6 h-6 text-red-300" />}
-        />
-        <MetricCard
-          title="Revenue at Risk"
-          value={`$${metrics.revenueAtRisk.toFixed(0)}`}
-          icon={<DollarSign className="w-6 h-6 text-yellow-300" />}
-        />
-        <MetricCard
-          title="Revenue Recovered"
-          value={`$${metrics.revenueRecovered}`}
-          icon={<TrendingUp className="w-6 h-6 text-green-300" />}
-          trend={{ value: 23, isPositive: true }}
         />
         <MetricCard
           title="Active Campaigns"
@@ -128,7 +112,7 @@ export function Dashboard({ customers }: DashboardProps) {
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={riskDistribution}
+                data={riskDistribution as any}
                 cx="50%"
                 cy="50%"
                 labelLine={false}

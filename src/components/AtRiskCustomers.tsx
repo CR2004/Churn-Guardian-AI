@@ -99,23 +99,6 @@ export function AtRiskCustomers({ customers, onGenerateCampaign }: AtRiskCustome
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2 text-white/80">
-                    <Calendar className="w-4 h-4 text-white/60" />
-                    <div>
-                      <p className="text-xs text-white/50">Last Purchase</p>
-                      <p className="text-sm font-medium">{formatDate(customer.lastPurchaseDate)}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 text-white/80">
-                    <DollarSign className="w-4 h-4 text-white/60" />
-                    <div>
-                      <p className="text-xs text-white/50">Total Spent</p>
-                      <p className="text-sm font-medium">${customer.totalSpent.toFixed(2)}</p>
-                    </div>
-                  </div>
-                </div>
-
                 <div className="flex items-start gap-2">
                   <Mail className="w-4 h-4 text-white/60 mt-0.5" />
                   <div className="flex-1">

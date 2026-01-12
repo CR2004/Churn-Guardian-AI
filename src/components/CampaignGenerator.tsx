@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Sparkles, Send, X, TrendingUp, MousePointerClick, DollarSign, Mail as MailIcon } from 'lucide-react';
+import { Sparkles, Send, X } from 'lucide-react';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { Card } from './Card';
 import { MistralService } from '../services/mistral';
+import { KlaviyoService } from '../services/klaviyo';
 import type { Customer, GeneratedCampaign, Settings } from '../types';
 
 interface CampaignGeneratorProps {
@@ -15,6 +16,7 @@ interface CampaignGeneratorProps {
   onSendCampaign: (campaign: GeneratedCampaign, customer: Customer) => void;
 }
 
+
 export function CampaignGenerator({
   isOpen,
   onClose,
@@ -24,6 +26,7 @@ export function CampaignGenerator({
   onSendCampaign,
 }: CampaignGeneratorProps) {
   const [generating, setGenerating] = useState(false);
+  const [sending, setSending] = useState(false);
   const [campaign, setCampaign] = useState<GeneratedCampaign | null>(null);
   const [error, setError] = useState('');
   const [editableSubject, setEditableSubject] = useState('');
@@ -75,7 +78,6 @@ export function CampaignGenerator({
         openRate: 28 + Math.random() * 10,
         clickRate: 8 + Math.random() * 5,
         conversionRate: 3 + Math.random() * 3,
-        projectedRevenue: customer.totalSpent * (0.15 + Math.random() * 0.1),
       };
 
       setCampaign({
@@ -89,9 +91,10 @@ export function CampaignGenerator({
     }
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!campaign || !customer) return;
 
+    setSending(true);
     const updatedCampaign: GeneratedCampaign = {
       subject: editableSubject,
       preheader: editablePreheader,
@@ -100,8 +103,48 @@ export function CampaignGenerator({
       expectedMetrics: campaign.expectedMetrics,
     };
 
-    onSendCampaign(updatedCampaign, customer);
-    onClose();
+    try {
+      const klaviyo = new KlaviyoService(import.meta.env.VITE_KLAVIYO_API_KEY || '');
+      const listId = import.meta.env.VITE_KLAVIYO_EMAIL_LIST_ID;
+ 
+      console.log('🚀 Creating campaign with Klaviyo...');
+
+      const result = await klaviyo.createFullCampaign(
+        `Churn Winback - ${customer.name} - ${Date.now()}`,
+        {
+          subject: updatedCampaign.subject,
+          preheader: updatedCampaign.preheader,
+          fromEmail: 'chaturvediaman101@gmail.com',
+          fromName: 'Churn Guardian AI',
+          content: {}
+        },
+        [listId],
+        'static' // send from klaviyo after review
+      );
+ 
+      if (!result.success) {
+        setError(`Failed: ${JSON.stringify(result.error)}`);
+        return;
+      }
+ 
+      console.log('✅ Campaign created!', result);
+ 
+      alert(`✅ Campaign Created Successfully!
+ 
+   Campaign ID: ${result.campaignId}
+   Message ID: ${result.messageId}
+ 
+   Go to your Klaviyo dashboard to review and send!`);
+ 
+      onSendCampaign(updatedCampaign, customer);
+      onClose();
+ 
+    } catch (err: any) {
+      console.error('Campaign creation error:', err);
+      setError(`Error: ${err.message}`);
+    } finally {
+      setSending(false);
+    }
   };
 
   if (!customer) return null;
@@ -201,52 +244,11 @@ export function CampaignGenerator({
             </div>
           </Card>
 
-          <Card>
-            <h3 className="text-lg font-bold text-white mb-4">Expected Performance</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="p-3 bg-gradient-to-br from-blue-500/30 to-cyan-500/30 rounded-lg mb-2 mx-auto w-fit">
-                  <MailIcon className="w-6 h-6 text-blue-300" />
-                </div>
-                <p className="text-2xl font-bold text-white">
-                  {campaign.expectedMetrics.openRate.toFixed(1)}%
-                </p>
-                <p className="text-white/60 text-sm">Open Rate</p>
-              </div>
-              <div className="text-center">
-                <div className="p-3 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-lg mb-2 mx-auto w-fit">
-                  <MousePointerClick className="w-6 h-6 text-purple-300" />
-                </div>
-                <p className="text-2xl font-bold text-white">
-                  {campaign.expectedMetrics.clickRate.toFixed(1)}%
-                </p>
-                <p className="text-white/60 text-sm">Click Rate</p>
-              </div>
-              <div className="text-center">
-                <div className="p-3 bg-gradient-to-br from-green-500/30 to-emerald-500/30 rounded-lg mb-2 mx-auto w-fit">
-                  <TrendingUp className="w-6 h-6 text-green-300" />
-                </div>
-                <p className="text-2xl font-bold text-white">
-                  {campaign.expectedMetrics.conversionRate.toFixed(1)}%
-                </p>
-                <p className="text-white/60 text-sm">Conversion</p>
-              </div>
-              <div className="text-center">
-                <div className="p-3 bg-gradient-to-br from-yellow-500/30 to-orange-500/30 rounded-lg mb-2 mx-auto w-fit">
-                  <DollarSign className="w-6 h-6 text-yellow-300" />
-                </div>
-                <p className="text-2xl font-bold text-white">
-                  ${campaign.expectedMetrics.projectedRevenue.toFixed(0)}
-                </p>
-                <p className="text-white/60 text-sm">Projected Revenue</p>
-              </div>
-            </div>
-          </Card>
 
           <div className="flex gap-4">
-            <Button onClick={handleSend} className="flex-1" size="lg">
+            <Button onClick={handleSend} className="flex-1" size="lg" loading={sending} disabled={sending}>
               <Send className="w-5 h-5 mr-2" />
-              Send via Klaviyo
+              {sending ? 'Sending...' : 'Send via Klaviyo'}
             </Button>
             <Button onClick={onClose} variant="secondary" size="lg">
               <X className="w-5 h-5 mr-2" />

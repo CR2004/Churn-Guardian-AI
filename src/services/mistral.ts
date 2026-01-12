@@ -112,9 +112,8 @@ export class MistralService {
 
     return `You are an expert e-commerce email marketing copywriter. Create a win-back email campaign for a customer with these details:
 - Name: ${customer.name}
-- Last purchase: ${customer.daysSinceLastPurchase} days ago
-- Total lifetime value: $${customer.totalSpent.toFixed(2)}
-- Purchase history: ${customer.topProducts.length > 0 ? customer.topProducts.join(', ') : 'various products'}
+- Last Product Viewed: ${customer.daysSinceLastProductView} days ago
+- engagement trend: $${customer.engagementTrend ? (customer.engagementTrend > 0 ? 'increasing' : 'declining') : 'stable'}
 
 Create a personalized campaign that:
 1. Acknowledges their past loyalty
@@ -134,7 +133,7 @@ Return ONLY valid JSON with this exact structure:
   private getDefaultBody(customer: Customer): string {
     return `Hi ${customer.firstName || customer.name},
 
-We noticed it's been ${customer.daysSinceLastPurchase} days since your last visit, and we miss you!
+We noticed it's been ${customer.daysSinceLastProductView} days since your last visit, and we miss you!
 
 As one of our valued customers, we wanted to reach out with a special offer just for you: 20% off your next purchase!
 

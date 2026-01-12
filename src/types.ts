@@ -4,20 +4,20 @@ export interface Customer {
   name: string;
   firstName?: string;
   lastName?: string;
-  lastPurchaseDate: string | null;
-  totalSpent: number;
   riskScore: number;
   churnSignals: string[];
   emailEngagementRate: number;
-  daysSinceLastPurchase: number;
-  purchaseCount: number;
-  topProducts: string[];
+  productViews: number;
+  daysSinceLastProductView: number;
+  openRate?: number; // 0-100
+  clickRate?: number; // 0-100
+  daysSinceLastOpen?: number;
+  daysSinceLastClick?: number;
+  engagementTrend?: number; // Negative = declining
 }
 
 export interface DashboardMetrics {
   highRiskCustomers: number;
-  revenueAtRisk: number;
-  revenueRecovered: number;
   activeCampaigns: number;
 }
 
@@ -42,7 +42,6 @@ export interface GeneratedCampaign {
     openRate: number;
     clickRate: number;
     conversionRate: number;
-    projectedRevenue: number;
   };
 }
 

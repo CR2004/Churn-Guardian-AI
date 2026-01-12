@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Key, Sparkles, AlertCircle, CheckCircle } from 'lucide-react';
+import { Sparkles, AlertCircle, CheckCircle } from 'lucide-react';
 import { Card } from './Card';
 import { Button } from './Button';
 import { KlaviyoService } from '../services/klaviyo';
@@ -10,7 +10,7 @@ interface ApiConnectionScreenProps {
 }
 
 export function ApiConnectionScreen({ onConnect }: ApiConnectionScreenProps) {
-  const [klaviyoKey, setKlaviyoKey] = useState('');
+  const [klaviyoKey, setKlaviyoKey] = useState(import.meta.env.VITE_KLAVIYO_API_KEY || '');
   const [mistralKey, setMistralKey] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -72,39 +72,10 @@ export function ApiConnectionScreen({ onConnect }: ApiConnectionScreenProps) {
           <h2 className="text-2xl font-bold text-white mb-6">Connect Your APIs</h2>
 
           <div className="space-y-6">
+            {/* Klaviyo API key is loaded from .env (VITE_KLAVIYO_API_KEY) and not editable in the UI */}
             <div>
-              <label className="block text-white/90 font-medium mb-2 flex items-center gap-2">
-                <Key className="w-4 h-4" />
-                Klaviyo API Key
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  value={klaviyoKey}
-                  onChange={e => setKlaviyoKey(e.target.value)}
-                  placeholder="pk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-                {validationStatus.klaviyo && (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    {validationStatus.klaviyo === 'success' ? (
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    ) : (
-                      <AlertCircle className="w-5 h-5 text-red-400" />
-                    )}
-                  </div>
-                )}
-              </div>
-              <p className="text-white/50 text-sm mt-1">
-                Get your API key from{' '}
-                <a
-                  href="https://www.klaviyo.com/settings/account/api-keys"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-purple-400 hover:text-purple-300"
-                >
-                  Klaviyo Settings
-                </a>
+              <p className="text-white/70 text-sm">
+                Klaviyo API key is loaded from the environment.
               </p>
             </div>
 

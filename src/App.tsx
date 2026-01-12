@@ -21,6 +21,7 @@ function App() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [showCampaignGenerator, setShowCampaignGenerator] = useState(false);
+  const [campaignCount, setCampaignCount] = useState<number>(0);
   const [settings, setSettings] = useState<Settings>({
     churnThresholds: {
       daysSinceLastPurchase: 90,
@@ -53,15 +54,24 @@ function App() {
     const metrics: KlaviyoMetric[] = await klaviyoService.getMetrics();
 
     const metricMap = new Map<string, string>();
+    // Get email campaign count
+    const emailCampaignCount = await klaviyoService.getCampaignCount('email');
+    console.log('Email campaign count:', emailCampaignCount);
+    setCampaignCount(emailCampaignCount);
+
     metrics.forEach(metric => {
       metricMap.set(metric.id, metric.attributes.name);
     });
+    console.log ('Fetched metrics:', metricMap);
+
 
     const customersWithRisk: Customer[] = [];
 
     for (const profile of profiles) {
       const events: KlaviyoEvent[] = await klaviyoService.getEventsForProfile(profile.id);
-      const customer = calculateChurnRisk(profile, events, metricMap, settings);
+      console.log("Events: " ,events)
+      const customer = calculateChurnRisk(profile, events, metricMap);
+      console.log("Customer: " ,customer)
       customersWithRisk.push(customer);
     }
 
@@ -122,7 +132,7 @@ function App() {
           onChange={setActiveTab}
         />
 
-        {activeTab === 'Dashboard' && <Dashboard customers={customers} />}
+        {activeTab === 'Dashboard' && <Dashboard customers={customers} activeCampaigns={campaignCount}/>}
 
         {activeTab === 'At-Risk Customers' && (
           <AtRiskCustomers
