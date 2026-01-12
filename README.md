@@ -145,6 +145,10 @@ Due to time constraints in the hackathon, the following limitations exist:
    - Currently only tracks product view events
    - No purchase history integration yet
    - Limited product-level insights
+  
+4. **Churn-Impact chart**:
+   - This chart currently uses mock data.
+   - In production, will be replaced with real predicted and actual churn rate.
 
 ## Future Directions
 
