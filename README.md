@@ -7,17 +7,8 @@ An AI-powered customer churn prediction dashboard for e-commerce businesses, bui
 - **Advanced Churn Prediction**: Multi-factor risk scoring algorithm analyzing email engagement, product interactions, and behavioral trends
 - **AI-Powered Campaign Generator**: Uses Mistral AI to generate personalized win-back email campaigns
 - **Real-time Klaviyo Integration**: Fetches customer data and events from Klaviyo's REST API
-- **Interactive Dashboard**: Visualizes churn metrics, risk distribution, and campaign performance
-- **Customizable Settings**: Adjust churn thresholds, AI model selection, and campaign tone
-
-## Tech Stack
-
-- **Frontend**: React 18 + TypeScript + Vite
-- **Styling**: Tailwind CSS with custom gradient design
-- **Data Visualization**: Recharts
-- **API Integration**: Axios
-- **AI**: Mistral AI (free tier)
-- **Customer Data**: Klaviyo REST API
+- **Interactive Dashboard**: Visualizes churn metrics, risk distribution and AI insights
+- **Customizable Settings**: API keys
 
 ## Getting Started
 
@@ -71,13 +62,6 @@ npm run dev
 ```
 
 The app will be available at `http://localhost:5173`
-
-### Build
-
-Build for production:
-```bash
-npm run build
-```
 
 ## How It Works
 
@@ -156,7 +140,6 @@ Due to time constraints in the hackathon, the following limitations exist:
 2. **List-Based Sending**:
    - Campaigns send to entire lists rather than individual recipients
    - Workaround: manually choose the recipients
-   - Not ideal for production use at scale
 
 3. **Basic Product Data**:
    - Currently only tracks product view events
@@ -167,7 +150,6 @@ Due to time constraints in the hackathon, the following limitations exist:
 
 ### Short Term
 - **Direct Email Sending**: Implement proper single-recipient email delivery
-- **Segment-Based Targeting**: Use Klaviyo segments instead of lists for more precise targeting
 - **Enhanced Product Analytics**: 
   - Track add-to-cart events
   - Monitor product category preferences
@@ -178,11 +160,6 @@ Due to time constraints in the hackathon, the following limitations exist:
   - Train supervised ML models on historical churn data
   - Use features: purchase frequency, average order value, seasonality
   - Improve prediction accuracy beyond rule-based scoring
-
-- **A/B Testing Framework**:
-  - Test different campaign strategies
-  - Measure win-back success rates
-  - Optimize subject lines and offers
 
 - **Multi-Channel Support**:
   - SMS campaigns for high-value customers
@@ -207,10 +184,10 @@ Due to time constraints in the hackathon, the following limitations exist:
 
 ## Key Components
 
-- **Dashboard**: Overview of high-risk customers, revenue at risk, and campaign performance
+- **Dashboard**: Overview of high-risk customers
 - **At-Risk Customers**: Detailed list of customers sorted by risk score with engagement signals
 - **Campaign Generator**: AI-powered tool to create personalized win-back campaigns
-- **Settings**: Configure churn thresholds, AI model selection, and campaign parameters
+- **Settings**: change API keys
 
 ## API Integration
 
@@ -228,12 +205,6 @@ Due to time constraints in the hackathon, the following limitations exist:
 - Model: `mistral-small-latest` (free tier)
 - Use: Campaign content generation
 
-
-
-
-## License
-
-MIT
 
 ## Built For
 
